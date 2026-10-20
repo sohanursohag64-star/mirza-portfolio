@@ -1,0 +1,16 @@
+export const adminNav = [
+  { label: "Dashboard", href: "/admin", icon: "layout-dashboard" },
+  { label: "Profile", href: "/admin/profile", icon: "user" },
+  { label: "Statistics", href: "/admin/statistics", icon: "bar-chart" },
+  { label: "Career", href: "/admin/career", icon: "briefcase" },
+  { label: "Team", href: "/admin/team", icon: "users" },
+  { label: "Regions", href: "/admin/regions", icon: "layers" },
+  { label: "Territories", href: "/admin/territories", icon: "map-pin" },
+  { label: "Expertise", href: "/admin/expertise", icon: "target" },
+  { label: "Achievements", href: "/admin/achievements", icon: "award" },
+  { label: "Activities", href: "/admin/activities", icon: "calendar" },
+  { label: "Gallery", href: "/admin/gallery", icon: "image" },
+  { label: "Documents", href: "/admin/documents", icon: "file-text" },
+  { label: "Contact", href: "/admin/contact", icon: "mail" },
+  { label: "Settings", href: "/admin/settings", icon: "settings" },
+] as const;
