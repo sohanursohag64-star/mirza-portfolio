@@ -1,32 +1,70 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import LoginForm from "@/components/admin/LoginForm";
-import { getSession } from "@/lib/auth"; // আপনার নিজের সেশন-চেক ফাংশন
+"use client";
+import { useFormState, useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { AlertCircle, Clock } from "lucide-react";
+import FormInput from "./FormInput";
+import { signIn } from "@/app/admin/login/actions";
 
-export const metadata: Metadata = {
-  title: "Admin Login",
-  robots: { index: false, follow: false },
-};
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-navy text-offwhite py-3 text-sm font-medium hover:bg-navy-light disabled:opacity-60"
+    >
+      {pending ? "Signing in…" : "Sign In"}
+    </button>
+  );
+}
 
-export default async function AdminLoginPage() {
-  const session = await getSession();
-  if (session) redirect("/admin");
+export default function LoginForm() {
+  const [state, formAction] = useFormState(signIn, undefined);
+  const params = useSearchParams();
+  const next = params.get("next") ?? "/admin";
+  const expired = params.get("expired") === "1";
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-white">
-      {/* বাম প্যানেল আগের মতোই */}
-
-      <main className="flex items-center justify-center px-6 py-16">
-        <div className="w-full max-w-sm">
-          <p className="font-display text-2xl text-navy">Mirza Asif Iqbal</p>
-          <h1 className="text-sm text-charcoal/65 mt-1">Sales Leadership Management</h1>
-          <div className="hairline w-16 mt-5 mb-8" />
-          <Suspense fallback={null}>
-            <LoginForm />
-          </Suspense>
+    <form action={formAction} className="space-y-5">
+      <input type="hidden" name="next" value={next} />
+      {expired && !state?.error && (
+        <div role="status" className="flex gap-3 border border-gold-line/60 bg-offwhite px-4 py-3 text-sm text-charcoal/80">
+          <Clock className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+          <p>Your session has expired. Please sign in again.</p>
         </div>
-      </main>
-    </div>
+      )}
+      <FormInput
+        id="email"
+        name="email"
+        label="Email"
+        type="email"
+        autoComplete="email"
+        placeholder="you@example.com"
+        required
+      />
+      <FormInput
+        id="password"
+        name="password"
+        label="Password"
+        type="password"
+        autoComplete="current-password"
+        placeholder="Enter your password"
+        required
+      />
+      {state?.error && (
+        <div role="alert" className="flex gap-3 border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+          <p>{state.error}</p>
+        </div>
+      )}
+      <SubmitButton />
+      <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <Link href="/" className="text-navy/70 hover:text-gold">← Back to website</Link>
+      </div>
+      <p className="text-xs text-navy/60">
+        Forgot password? Ask another admin to reset it in Supabase.
+      </p>
+    </form>
   );
 }
